@@ -28,10 +28,10 @@
         <meta name='viewport' content='width=device-width, height=device-height, initial-scale=1, user-scalable=no' />
 
 
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
-		<link rel="stylesheet" href="css/jquery.mobile.min.css" />
-		<link rel="stylesheet" href="vendor/waves/waves.min.css" />
-		<link rel="stylesheet" href="css/nativedroid2.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css" />
+    		<link rel="stylesheet" href="css/jquery.mobile.min.css" />
+    		<link rel="stylesheet" href="vendor/waves/waves.min.css" />
+    		<link rel="stylesheet" href="css/nativedroid2.css" />
 
 				<style>
 					/* Prevent FOUC */
@@ -65,14 +65,12 @@
 
     <div data-role="header" data-position="fixed" class="wow fadeIn" style="margin-top: 20px;">
       <a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
-      <h1 class="wow fadeIn" data-wow-delay='0.4s'>Today's buying</h1>
-      <a href="javascript:;" onclick="getData();" class="ui-btn-fab ui-btn-raised clr-warning ui-btn ui-btn-inline waves-effect waves-button waves-effect waves-button"><i class="zmdi zmdi-replay zmd-2x"></i></a>
+      <h1 class="wow fadeIn" data-wow-delay='0.4s'>Search</h1>
     </div>
 
     <div role="main" class="ui-content wow fadeIn" data-wow-delay="0.2s" data-inset="false">
-
-      <a href="newtransaction.html" class="ui-btn ui-btn-icon-left"><i class='zmdi zmdi-plus'></i> &nbsp; Add New Transaction</a>
-      <h4 id="currentDate"></h4>
+      <input type="text" name="searchText" id="searchText" value="" data-clear-btn="true" placeholder="e.g. 20/02/2016 or Bhavani Gems">
+      <a class="ui-btn ui-btn-raised clr-primary waves-effect waves-button waves-effect waves-button" id="btnSearch" href="javascript:;">Search</a>
       <hr />
 
         <table data-role="table" id="table-column-toggle" style="font-size: 13px;" data-mode="columntoggle" class="ui-responsive table table-hover table-stroke">
@@ -118,8 +116,6 @@ $.mobile.ajaxLinksEnabled(false);
           $("form").first().attr("data-ajax", "false");
           $("form").first().attr("rel", "external");
       }
-      getData();
-
       $('table').on('click', '.header', function() {
         var recId = $(this).attr("lang");
 
@@ -140,31 +136,50 @@ $.mobile.ajaxLinksEnabled(false);
       return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
+    var isValidDate = function (value, userFormat) {
+        var userFormat = userFormat || 'mm/dd/yyyy', // default format
+
+        delimiter = /[^mdy]/.exec(userFormat)[0],
+        theFormat = userFormat.split(delimiter),
+        theDate = value.split(delimiter),
+
+        isDate = function (date, format) {
+          var m, d, y
+          for (var i = 0, len = format.length; i < len; i++) {
+            if (/m/.test(format[i])) m = date[i]
+            if (/d/.test(format[i])) d = date[i]
+            if (/y/.test(format[i])) y = date[i]
+          }
+          return (
+            m > 0 && m < 13 &&
+            y && y.length === 4 &&
+            d > 0 && d <= (new Date(y, m, 0)).getDate()
+          )
+        }
+
+        return isDate(theDate, theFormat)
+    }
+
     function logout(){
         $.mobile.changePage("login.html?ur=ss", null, true, true);
     }
 
-    function getData(){
-      var days = getParameterByName("days");
+    $("#btnSearch").click(function() {
+      var string = $("#searchText").val();
 
-      var d = new Date();
-      var start = new moment(d);
-      start.startOf('day');
-      var finish = new moment(start);
-      finish.add(1, 'day');
-
-      if(days != ""){
-        var int = parseInt(days);
-        start.subtract(int, 'day');
-        finish = new moment(start);
-        finish.add(1, 'day');
-      }
-
-      $("#currentDate").html(start.format("DD/MM/YYYY"));
       $.mobile.loading( 'show', { text: '', textVisible: false, theme: 'b', textonly: false, html: '' });
-      var query = new Parse.Query("Buying")
-      query.greaterThanOrEqualTo("createdAt", start.toDate());
-      query.lessThan("createdAt", finish.toDate());
+      var query = new Parse.Query("Buying");
+      var start = "";
+      var finish = "";
+      if(isValidDate(string)){
+        start = moment(string, "DD/MM/YYYY");
+        finish = moment(string, "DD/MM/YYYY").add(1, 'day');
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
+      }else{
+        query.matches("seller", ".*" + string + ".*");
+      }
+      query.descending("createdAt");
       query.find({
         success: function(results) {
           $.mobile.loading('hide');
@@ -179,7 +194,7 @@ $.mobile.ajaxLinksEnabled(false);
           $.mobile.loading('hide');
         }
       });
-    }
+    });
 
     function confirmPickup(objectId){
         var buyingCls = Parse.Object.extend("Buying");
@@ -198,38 +213,6 @@ $.mobile.ajaxLinksEnabled(false);
         });
     }
 
-    function buildDataManual(object){
-      var isPicked = false;
-      var activeClass = "active";
-      var strPickedup = "<p>" +
-      "<a class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='confirmPickup(\"" + object.id + "\");' href='javascript:;'>" +
-      "<i class='zmdi zmdi-delete'></i> &nbsp;" +
-      "Confirm Pickup by " + localStorage.getItem("Username") +
-      "</a>" +
-      "</p>";
-      if(object.get('pickupby') != "" && object.get('pickupby') !== undefined){
-        isPicked = true;
-        activeClass = "inactive";
-        strPickedup = "<p>Pickeup By: " + object.get('pickupby') + "</p>";
-      }
-      $("#divDetails").append("<div class='ui-collapsible ui-collapsible-themed-content ui-collapsible-collapsed' data-role='collapsible' data-inset='false'>" +
-            "<h4 class='" + activeClass + "'>" + object.get('seller') + " : " +  object.get('quantity') + " pic</h4>" +
-                "<p>Buyer: " + object.get('buyer') + "</p>" +
-                "<p>Seller: " + object.get('seller') + "</p>" +
-                "<p>Quantity: " + object.get('quantity') + "</p>" +
-                // "<p><div class='box'> Pickup By" +
-                // "<select name='select-choice-1' id='select-choice-1b' data-native-menu='false'>" +
-                //   "<option value='Damjibhai'>Damjibhai</option>" +
-                //   "<option value='Bhuatik'>Bhuatik</option>" +
-                //   "<option value='Fenil'>Fenil</option>" +
-                //   "<option value='Hardik'>Hardik</option>" +
-                // "</select>" +
-                // "</p>" +
-                strPickedup +
-        "</div>" +
-      "</div>").trigger("create");
-    }
-
     function buildData(object){
       var activeClass = "active";
       var isPicked = false;
@@ -241,6 +224,9 @@ $.mobile.ajaxLinksEnabled(false);
       "Confirm Pickup" +
       "</a>" +
       "</p>";
+
+      var d = new Date(object.createdAt);
+      var dateString = new moment(d);
 
       if(object.get('interferer') != "" && object.get('interferer') !== undefined){
         interferer = "<p>Interferer: " + object.get('interferer') + "</p>";
@@ -259,6 +245,7 @@ $.mobile.ajaxLinksEnabled(false);
   "<td>"+ object.get('discount') +"</td>" +
 "<td>"+ object.get('discountType') +"</td></tr>" +
 "<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
+"<p>Date: "+ dateString.format("DD/MM/YYYY") + "</p>" +
 "<p>Buyer: " + object.get('buyer') + "</p>" +
 "<p>Seller: " + object.get('seller') + "</p>" +
 "<p>Quantity: " + object.get('quantity') + "</p>" +
