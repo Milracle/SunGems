@@ -50,6 +50,10 @@
             border-color: white;
             border-style: solid;
           }
+
+          p{
+            font-size: 14px;
+          }
 				</style>
 
     </head>
@@ -71,7 +75,20 @@
       <h4 id="currentDate"></h4>
       <hr />
 
-      <div id="divDetails">
+        <table data-role="table" id="table-column-toggle" style="font-size: 13px;" data-mode="columntoggle" class="ui-responsive table table-hover table-stroke">
+              <thead>
+                <tr style="color:#607d8b;font-size:15px;">
+                  <th >Seller</th>
+                  <th >PC</th>
+                  <th >Weight</th>
+                  <th >Dis</th>
+                  <th >Dis Type</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div id="divDetails">
         </div>
     </div>
 
@@ -102,6 +119,13 @@ $.mobile.ajaxLinksEnabled(false);
           $("form").first().attr("rel", "external");
       }
       getData();
+
+      $('table').on('click', '.header', function() {
+        $(".collapse").css("display","none");
+          var recId = $(this).attr("lang");
+         //$(this).find('span').text(function(_, value){return value=='-'?'+':'-'});
+          $("#"+recId).slideToggle(100); // or just use "toggle()"
+      });
     });
 
     function getParameterByName(name) {
@@ -139,7 +163,7 @@ $.mobile.ajaxLinksEnabled(false);
       query.find({
         success: function(results) {
           $.mobile.loading('hide');
-          $("#divDetails").html('');
+          $("#table-column-toggle > tbody").html("");
           for (var i = 0; i < results.length; i++) {
             var object = results[i];
             buildData(object);
@@ -169,7 +193,7 @@ $.mobile.ajaxLinksEnabled(false);
         });
     }
 
-    function buildData(object){
+    function buildDataManual(object){
       var isPicked = false;
       var activeClass = "active";
       var strPickedup = "<p>" +
@@ -199,6 +223,31 @@ $.mobile.ajaxLinksEnabled(false);
                 strPickedup +
         "</div>" +
       "</div>").trigger("create");
+    }
+
+    function buildData(object){
+      var activeClass = "active";
+      var isPicked = false;
+      if(object.get('pickupby') != "" && object.get('pickupby') !== undefined){
+        isPicked = true;
+        activeClass = "inactive";
+        strPickedup = "<p>Pickeup By: " + object.get('pickupby') + "</p>";
+      }
+
+      $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
+      "<td>"+ object.get('seller') + "</td>" +
+      "<td>"+ object.get('quantity') +"</td>" +
+    "<td>"+ object.get('weight') +"</td>" +
+  "<td>"+ object.get('discount') +"</td>" +
+"<td>"+ object.get('discountType') +"</td></tr>" +
+"<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
+"<p>Buyer: " + object.get('buyer') + "</p>" +
+"<p>Seller: " + object.get('seller') + "</p>" +
+"<p>Quantity: " + object.get('quantity') + "</p>" +
+"<p>Weight:"+ object.get('weight') +"</p>" +
+"<p>Discount:"+ object.get('discount') +"</p>" +
+"<p>DiscountType:"+ object.get('discountType') +"</p>" +
+"</div></tr>").trigger("create");
     }
   </script>
     </body>
