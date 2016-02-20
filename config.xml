@@ -18,6 +18,11 @@
     <preference name="disable-cursor" value="false"/>
     <preference name="android-minSdkVersion" value="14"/>
     <preference name="android-installLocation" value="auto"/>
+    <preference name="EnableViewportScale" value="true"/>
+    <preference name="FadeSplashScreen" value="false"/>
+    <preference name="GapBetweenPages" value="0"/>
+    <preference name="PageLength" value="0"/>
+    <preference name="PaginationBreakingMode" value="page"/>
     <gap:plugin name="org.apache.cordova.battery-status"/>
     <gap:plugin name="org.apache.cordova.camera"/>
     <gap:plugin name="org.apache.cordova.media-capture"/>
@@ -57,9 +62,9 @@
         <icon src="www/res/icon/ios/icon-60.png" width="60" height="60"/>
         <icon src="www/res/icon/ios/icon-60@2x.png" width="120" height="120"/>
         <icon src="ios/icons/100.png" width="100" height="100" />
-        <splash src="www/res/screen/ios/Default-568h@2x.png" width="320" height="480"/>
-        <splash src="www/res/screen/ios/Default-568h@2x.png" width="640" height="960"/>
-        <splash src="www/res/screen/ios/Default-568h@2x.png" width="640" height="1136"/>
+        <splash src="www/res/screen/ios/Default~iphone.png" width="320" height="480"/>
+        <splash src="www/res/screen/ios/Default@2x~iphone.png" width="640" height="960"/>
+        <splash src="www/res/screen/ios/Default-568h@2x~iphone.png" width="640" height="1136"/>
     </platform>
     <gap:splash src="www/res/screen/ios/screen-ipad-portrait.png" gap:platform="ios" width="768" height="1024"/>
     <gap:splash src="www/res/screen/ios/screen-ipad-landscape.png" gap:platform="ios" width="1024" height="768"/>
