@@ -82,13 +82,38 @@
                     <label for="quantity">Quantity:</label>
                         <input type="text" name="quantity" id="quantity" value="" data-clear-btn="true" placeholder="">
 
+                    <p>
+                    <label for="dlDiscountType">Discount Type:</label>
+                    <select name="dlDiscountType" id="dlDiscountType" data-role="none">
+                        <option value="" selected>none</option>
+                        <option value="Less 1">Less 1</option>
+                        <option value="Less 2">Less 2</option>
+                        <option value="Less 3">Less 3</option>
+                    </select>
+                    </p>
+
+                    <label for="discount">Discount:</label>
+                        <input type="text" name="discount" id="discount" value="" data-clear-btn="true" placeholder="">
+
+                    <p>
+                    <label for="dlBill">Bill:</label>
+                    <select name="dlBill" id="dlBill" data-role="none">
+                        <option value="" selected></option>
+                        <option value="Mumbai Bill">Mumbai Bill</option>
+                        <option value="Surat Bill">Surat Bill</option>
+                        <option value="Export">Export</option>
+                    </select>
+                    </p>
+
+                    <label for="interferer">Interferer:</label>
+                        <input type="text" name="interferer" id="interferer" value="" data-clear-btn="true" placeholder="">
+
                     <label for="note">Note:</label>
                         <input type="text" name="note" id="note" value="" data-clear-btn="true" placeholder="">
               </div>
               <fieldset data-role="controlgroup">
                 <a class="ui-btn ui-btn-raised clr-primary waves-effect waves-button waves-effect waves-button" id="btnSave" href="javascript:;">Save</a>
               </fieldset>
-
           </div>
 				</div>
 				</form>
@@ -124,6 +149,10 @@
         var note = $("#note").val();
         var buyer = $('#buyer').val();//$('#dlBuyer').find(":selected").text();
         var isValid = true;
+        var interferer = $('#interferer').val();
+        var discountType = $('#dlDiscountType').find(":selected").text();
+        var billType = $('#dlBill').find(":selected").text();
+        var discount = $('#discount').val();
 
         if(seller.length == 0){
           isValid = false;
@@ -147,7 +176,13 @@
           newbuy.set("buyer", buyer);
           newbuy.set("seller", seller);
           newbuy.set("weight", weight);
+          newbuy.set("note", note);
           newbuy.set("quantity", quantity);
+          newbuy.set("discount", discount);
+          newbuy.set("discountType", discountType);
+          newbuy.set("bill", billType);
+          newbuy.set("interferer", interferer);
+
           newbuy.save(null, {
             success: function(newbuy) {
               // Execute any logic that should take place after the object is saved.

@@ -45,7 +45,14 @@
         <script type="text/javascript">
             app.initialize();
             function deviceReady(){
-              location.href = 'login.html';
+              var Username = window.localStorage.getItem('Username')
+
+              if (Username === null || Username.length === 0)
+              {
+                location.href = 'login.html';
+              }else{
+                location.href = 'landing.html';
+              }
             }
         </script>
     </body>
