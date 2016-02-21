@@ -127,6 +127,8 @@ $.mobile.ajaxLinksEnabled(false);
           }
         });
       });
+                      
+        $(".ui-table-columntoggle-btn").remove();
     });
 
     function getParameterByName(name) {
@@ -208,8 +210,8 @@ $.mobile.ajaxLinksEnabled(false);
       "<td>"+ object.get('seller') + "</td>" +
       "<td>"+ object.get('quantity') +"</td>" +
     "<td>"+ object.get('weight') +"</td>" +
-  "<td>"+ object.get('discount') +"</td>" +
-"<td>"+ object.get('discountType') +"</td></tr>" +
+ "<td>"+ (object.get('discount') === undefined ? "":object.get('discount')) +"</td>" +
+ "<td>"+ (object.get('discountType') === undefined ? "":object.get('discountType')) +"</td></tr>" +
 "<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
 "<p>Date: "+ dateString.format("DD/MM/YYYY") + "</p>" +
 "<p>Buyer: " + object.get('buyer') + "</p>" +
