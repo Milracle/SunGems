@@ -7,22 +7,17 @@
     <preference name="orientation" value="default"/>
     <preference name="target-device" value="handset"/>
     <preference name="fullscreen" value="true"/>
-    <preference name="webviewbounce" value="true"/>
-    <preference name="prerendered-icon" value="true"/>
-    <preference name="stay-in-webview" value="false"/>
-    <preference name="ios-statusbarstyle" value="black-opaque"/>
-    <preference name="detect-data-types" value="true"/>
-    <preference name="exit-on-suspend" value="false"/>
-    <preference name="show-splash-screen-spinner" value="true"/>
-    <preference name="auto-hide-splash-screen" value="true"/>
+    <preference name="webviewbounce"              value="true" />           <!-- ios: control whether the screen 'bounces' when scrolled beyond the top -->
+    <preference name="prerendered-icon"           value="true" />           <!-- ios: if icon is prerendered, iOS will not apply it's gloss to the app's icon on the user's home screen -->
+    <preference name="stay-in-webview"            value="false" />          <!-- ios: external links should open in the default browser, 'true' would use the webview the app lives in -->
+    <preference name="ios-statusbarstyle"         value="black-opaque" />   <!-- ios: black-translucent will appear black because the PhoneGap webview doesn't go beneath the status bar -->
+    <preference name="detect-data-types"          value="true" />           <!-- ios: controls whether data types (such as phone no. and dates) are automatically turned into links by the system -->
+    <preference name="exit-on-suspend"            value="false" />          <!-- ios: if set to true, app will terminate when home button is pressed -->
+    <preference name="show-splash-screen-spinner" value="true" />           <!-- ios: if set to false, the spinner won't appear on the splash screen during app loading -->
+    <preference name="auto-hide-splash-screen"    value="true" />           <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
     <preference name="disable-cursor" value="false"/>
     <preference name="android-minSdkVersion" value="14"/>
     <preference name="android-installLocation" value="auto"/>
-    <preference name="EnableViewportScale" value="true"/>
-    <preference name="FadeSplashScreen" value="false"/>
-    <preference name="GapBetweenPages" value="0"/>
-    <preference name="PageLength" value="0"/>
-    <preference name="PaginationBreakingMode" value="page"/>
     <gap:plugin name="org.apache.cordova.battery-status"/>
     <gap:plugin name="org.apache.cordova.camera"/>
     <gap:plugin name="org.apache.cordova.media-capture"/>
@@ -68,9 +63,9 @@
       <icon src="www/res/icon/ios/icon-60@2x.png" width="120" height="120"/>
       <icon src="ios/icons/100.png" width="100" height="100" />
     </platform>
-
-    <gap:splash src="www/res/screen/ios/screen-ipad-portrait.png" gap:platform="ios" width="768" height="1024"/>
-    <gap:splash src="www/res/screen/ios/screen-ipad-landscape.png" gap:platform="ios" width="1024" height="768"/>
+    <gap:splash src="www/res/screen/ios/Default~iphone.png"         gap:platform="ios"     width="320" height="480" />
+    <gap:splash src="www/res/screen/ios/Default@2x~iphone.png"      gap:platform="ios"     width="640" height="960" />
+    <gap:splash src="www/res/screen/ios/Default-568h@2x~iphone.png" gap:platform="ios"     width="640" height="1136" />
     <gap:splash src="www/res/screen/windows-phone/screen-portrait.jpg" gap:platform="winphone"/>
     <access origin="*"/>
     <plugin name="cordova-plugin-whitelist" version="1"/>
