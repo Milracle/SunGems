@@ -180,7 +180,9 @@ $.mobile.ajaxLinksEnabled(false);
       }else{
         query.matches("seller", ".*" + string + ".*");
       }
-      query.descending("createdAt");
+      //query.descending("pickupby");
+      //query.descending("createdAt");
+      query.ascending("pickupby");
       query.find({
         success: function(results) {
           $.mobile.loading('hide');
