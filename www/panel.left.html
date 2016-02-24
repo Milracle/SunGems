@@ -5,7 +5,7 @@
 					<div class="row">
 						<div class='col-xs-4 center-xs'>
 							<div class='box'>
-								<img class="profile-thumbnail" src="img/profile.jpg" />
+								<img class="profile-thumbnail"  src="img/profile.jpg" />
 							</div>
 						</div>
 						<div class='col-xs-8'>
@@ -35,6 +35,7 @@
 			<script type="text/javascript">
 				$("#ulHistory").empty("");
 				$('#name').html(localStorage.getItem("Username"));
+                $('.profile-thumbnail').attr("src","img/" + localStorage.getItem("Username") + ".jpg");
 				for(i=1; i<=10; i++){
 					var d = new Date();
 					var start = new moment(d);

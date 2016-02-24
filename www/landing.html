@@ -80,9 +80,10 @@
                 <tr style="color:#607d8b;font-size:15px;">
                   <th >Seller</th>
                   <th >PC</th>
-                  <th >Weight</th>
+                  <th >Wt</th>
                   <th >Dis</th>
-                  <th >Dis Type</th>
+                  <th >Type</th>
+                  <th >PBy</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,6 +133,8 @@ $.mobile.ajaxLinksEnabled(false);
         });
       });
       $(".ui-table-columntoggle-btn").remove();
+                      
+      setInterval(getData, 30000);
     });
 
     function getParameterByName(name) {
@@ -199,6 +202,44 @@ $.mobile.ajaxLinksEnabled(false);
           }
         });
     }
+                            
+    function cancelPickup(objectId){
+        var buyingCls = Parse.Object.extend("Buying");
+        var query = new Parse.Query(buyingCls);
+        query.get(objectId, {
+          success: function(buyingObj) {
+            buyingObj.set("pickupby","");
+            buyingObj.save();
+            getData();
+            // The object was retrieved successfully.
+          },
+          error: function(object, error) {
+          // The object was not retrieved successfully.
+          // error is a Parse.Error with an error code and message.
+          }
+      });
+    }
+                        
+    function deleteEntry(objectId){
+        var buyingCls = Parse.Object.extend("Buying");
+        var query = new Parse.Query(buyingCls);
+        query.get(objectId, {
+          success: function(buyingObj) {
+                  buyingObj.destroy({
+                       success: function(myObject) {
+                        getData();
+                       },
+                       error: function(myObject, error) {
+                            alert("Delete failed. Please try again later");
+                       }
+                  });
+              },
+              error: function(object, error) {
+                  alert("Delete failed. Please try again later");
+              }
+          });
+    }
+
 
     function buildDataManual(object){
       var isPicked = false;
@@ -238,8 +279,8 @@ $.mobile.ajaxLinksEnabled(false);
       var interferer = "";
 
       var strPickedup = "<p>" +
-      "<a style='border: 1px solid;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='confirmPickup(\"" + object.id + "\");' href='javascript:;'>" +
-      "<i class='zmdi zmdi-delete'></i> &nbsp;" +
+      "<a style='border: 1px solid;color: #00703c;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='confirmPickup(\"" + object.id + "\");' href='javascript:;'>" +
+      "<i class='zmdi zmdi-folder-outline'></i> &nbsp;" +
       "Confirm Pickup" +
       "</a>" +
       "</p>";
@@ -252,14 +293,27 @@ $.mobile.ajaxLinksEnabled(false);
         isPicked = true;
         activeClass = "inactive";
         strPickedup = "<p>Pickeup By: " + object.get('pickupby') + "</p>";
+        strPickedup += "<p>" +
+        "<a style='border: 1px solid;color: #F5740F;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='cancelPickup(\"" + object.id + "\");' href='javascript:;'>" +
+        "- Cancel Pickup" +
+        "</a>" +
+        "</p>";
       }
+                            
+        strPickedup += "<p>" +
+        "<a style='border: 1px solid;color:  #FB0000;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='deleteEntry(\"" + object.id + "\");' href='javascript:;'>" +
+        "<i class='zmdi zmdi-delete'></i> &nbsp;" +
+        "Delete Entry" +
+        "</a>" +
+        "</p>";
 
       $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
-      "<td>"+ object.get('seller') + "</td>" +
+     "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")</td>" +
       "<td>"+ object.get('quantity') +"</td>" +
     "<td>"+ object.get('weight') +"</td>" +
 "<td>"+ (object.get('discount') === undefined ? "":object.get('discount')) +"</td>" +
-"<td>"+ (object.get('discountType') === undefined ? "":object.get('discountType')) +"</td></tr>" +
+"<td>"+ (object.get('discountType') === undefined ? "":object.get('discountType')) +"</td>" +
+"<td>"+ (object.get('pickupby') === undefined ? "":object.get('pickupby')) +"</td></tr>" +
 "<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
 "<p>Buyer: " + object.get('buyer') + "</p>" +
 "<p>Seller: " + object.get('seller') + "</p>" +
@@ -267,6 +321,8 @@ $.mobile.ajaxLinksEnabled(false);
 "<p>Weight: "+ object.get('weight') +"</p>" +
 "<p>Discount: "+ object.get('discount') +"</p>" +
 "<p>DiscountType: "+ object.get('discountType') +"</p>" +
+"<p>Bill: "+ object.get('bill') +"</p>" +
+"<p>Note: "+ (object.get('note') === undefined ? "":object.get('note'))  +"</p>" +
 interferer +
 strPickedup +
 "</div></tr>").trigger("create");

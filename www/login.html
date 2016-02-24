@@ -33,12 +33,18 @@
         <title>Login</title>
         <style type="text/css">
         .app {
-            background-position: left center;
-            margin: -90px 0 0 -198px;
-            padding: 75px 0 75px 170px;
+            bottom: 0;
+            height: 200px;
+            left: 0;
+            margin: auto;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            top: 82%;
+            width: 200px;
         }
-        .app {
-            background: rgba(0, 0, 0, 0) url("img/diamond.jpg") no-repeat scroll center top;
+        .logo {
+            background: rgba(0, 0, 0, 0) url("img/sunlogo.png") no-repeat scroll center top;
             height: 50px;
             left: 50%;
             margin: -115px 0 0 -112px;
@@ -53,16 +59,22 @@
     </head>
     <body>
       <div data-role="page">
+          <div class="logo">
+          </div>
         <div class="app">
           <select name="dlBuyer" id="dlBuyer" data-role="none" >
               <option value="">Select User</option>
-              <option value="Tushar">Tushar</option>
-              <option value="Vishal">Vishal</option>
-              <option value="Mahesh">Mahesh</option>
+              <option value="Bhautik">Bhautik</option>
               <option value="Damjibhai">Damjibhai</option>
-              <option value="Bhuatik">Bhuatik</option>
               <option value="Fenil">Fenil</option>
               <option value="Hardik">Hardik</option>
+              <option value="Haresh">Haresh</option>
+              <option value="Kaushik">Kaushik</option>
+              <option value="Kirmal">Kirmal</option>
+              <option value="Mahesh">Mahesh</option>
+              <option value="Tushar">Tushar</option>
+              <option value="Virendra">Virendra</option>
+              <option value="Vishal">Vishal</option>
           </select>
           <fieldset data-role="controlgroup">
             <a class="ui-btn ui-btn-raised clr-primary waves-effect waves-button waves-effect waves-button" id="btnEnter" href="javascript:;">Enter</a>
