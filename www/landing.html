@@ -239,7 +239,25 @@ $.mobile.ajaxLinksEnabled(false);
               }
           });
     }
+                            
+    function editEntry(objectId){
+        location.href = 'newtransaction.html?objectId=' + objectId;
+    }
 
+    function editVal(column, objectId){
+        var buyingCls = Parse.Object.extend("Buying");
+        var query = new Parse.Query(buyingCls);
+        query.get(objectId, {
+          success: function(buyingObj) {
+              buyingObj.set("pickupby","");
+              buyingObj.save();
+              getData();
+              // The object was retrieved successfully.
+          },
+          error: function(object, error) {
+          }
+          });
+    }
 
     function buildDataManual(object){
       var isPicked = false;
@@ -306,6 +324,13 @@ $.mobile.ajaxLinksEnabled(false);
         "Delete Entry" +
         "</a>" +
         "</p>";
+                            
+        strPickedup += "<p>" +
+        "<a style='border: 1px solid;color:  #ecab5f;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='editEntry(\"" + object.id + "\");' href='javascript:;'>" +
+        "<i class='zmdi zmdi-edit'></i> &nbsp;" +
+        "Edit Entry" +
+        "</a>" +
+        "</p>";
 
       $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
      "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")</td>" +
@@ -316,7 +341,8 @@ $.mobile.ajaxLinksEnabled(false);
 "<td>"+ (object.get('pickupby') === undefined ? "":object.get('pickupby')) +"</td></tr>" +
 "<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
 "<p>Buyer: " + object.get('buyer') + "</p>" +
-"<p>Seller: " + object.get('seller') + "</p>" +
+"<p>Seller: " + object.get('seller') + "</a></p>" +
+//<a href='javascript:;' onclick='editVal(\"seller\", \"" + object.id + "\")'
 "<p>Quantity: " + object.get('quantity') + "</p>" +
 "<p>Weight: "+ object.get('weight') +"</p>" +
 "<p>Discount: "+ object.get('discount') +"</p>" +

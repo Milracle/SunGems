@@ -251,7 +251,10 @@ $.mobile.ajaxLinksEnabled(false);
     "Delete Entry" +
     "</a>" +
     "</p>";
-    
+                            
+                            d = new Date(object.updatedAt);
+                            var start = new moment(d);
+
     $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
                                            "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")</td>" +
                                            "<td>"+ object.get('quantity') +"</td>" +
@@ -260,6 +263,7 @@ $.mobile.ajaxLinksEnabled(false);
                                            "<td>"+ (object.get('discountType') === undefined ? "":object.get('discountType')) +"</td>" +
                                            "<td>"+ (object.get('pickupby') === undefined ? "":object.get('pickupby')) +"</td></tr>" +
                                            "<tr id='" + object.id + "' class='collapse' style='display:none;'><td colspan='5'><div>" +
+                                           "<p>Date: " + start.format("DD/MM/YYYY") + "</p>" + 
                                            "<p>Buyer: " + object.get('buyer') + "</p>" +
                                            "<p>Seller: " + object.get('seller') + "</p>" +
                                            "<p>Quantity: " + object.get('quantity') + "</p>" +

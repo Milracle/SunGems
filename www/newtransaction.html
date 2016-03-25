@@ -127,6 +127,16 @@
   <script src="https://www.parsecdn.com/js/parse-1.6.14.min.js"></script>
   <script src="js/moment.js"></script>
   <script type="text/javascript">
+      var objectId = "";
+      var buyingObj;
+      function getParameterByName(name) {
+          name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                                results = regex.exec(location.search);
+                                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+                                }
+
+                                
     $(document).ready(function(){
       Parse.initialize("c83fcAyGNd5F8vSdmI1aAgAhX2INlnTCL3ADZkZW", "ehe4YbTg5VH82sun0MkTCO6ZYmmghr4kEK5vrw72");
 
@@ -140,6 +150,31 @@
                          $("form").first().attr("data-ajax", "false");
                          $("form").first().attr("rel", "external");
                      }
+    
+      var objectId = getParameterByName("objectId");
+                      
+      if(objectId != ""){
+          var buyingCls = Parse.Object.extend("Buying");
+          var query = new Parse.Query(buyingCls);
+          query.get(objectId, {
+                success: function(object) {
+                    buyingObj = object;
+                    $("#buyer").val(object.get('buyer'));
+                    $("#seller").val(object.get('seller'));
+                    $("#weight").val(object.get('weight'));
+                    $("#quantity").val(object.get('quantity'));
+                    $("#note").val(object.get('note'));
+                    $("#interferer").val(object.get('interferer'))
+                    $("#discount").val(object.get('discount'));
+                    $("#dlDiscountType").val(object.get('discountType'));
+                    $("#dlBill").val(object.get('bill'));
+            },
+            error: function(object, error) {
+                    alert("Load failed. Please try again later");
+                }
+            });
+      }
+
       $("#btnSave").click(function() {
         var seller = $("#seller").val();
         var weight = $("#weight").val();
@@ -168,20 +203,24 @@
 
         if(isValid){
           $.mobile.loading( 'show', { text: '', textVisible: false, theme: 'b', textonly: false, html: '' });
-          var newBuying = Parse.Object.extend("Buying");
-          var newbuy = new newBuying();
+          if(objectId != ""){
+                
+          }else{
+              var newBuying = Parse.Object.extend("Buying");
+              buyingObj = new newBuying();
+          }
 
-          newbuy.set("buyer", buyer);
-          newbuy.set("seller", seller);
-          newbuy.set("weight", weight);
-          newbuy.set("note", note);
-          newbuy.set("quantity", quantity);
-          newbuy.set("discount", discount);
-          newbuy.set("discountType", discountType);
-          newbuy.set("bill", billType);
-          newbuy.set("interferer", interferer);
+          buyingObj.set("buyer", buyer);
+          buyingObj.set("seller", seller);
+          buyingObj.set("weight", weight);
+          buyingObj.set("note", note);
+          buyingObj.set("quantity", quantity);
+          buyingObj.set("discount", discount);
+          buyingObj.set("discountType", discountType);
+          buyingObj.set("bill", billType);
+          buyingObj.set("interferer", interferer);
 
-          newbuy.save(null, {
+          buyingObj.save(null, {
             success: function(newbuy) {
               // Execute any logic that should take place after the object is saved.
                 location.href = 'landing.html';
