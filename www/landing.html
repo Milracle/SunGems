@@ -43,6 +43,13 @@
             border-color: white;
             border-style: solid;
           }
+                
+                .oldInactive {
+                    background-color: #ff6666 !important;
+                    color: rgba(255, 255, 255, 0.85) !important;
+                    border-color: white;
+                    border-style: solid;
+                }
 
           .active {
             background-color: rgb(244, 67, 54) !important;
@@ -65,7 +72,7 @@
 
     <div data-role="header" data-position="fixed" class="wow fadeIn" style="margin-top: 20px;">
       <a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
-      <h1 class="wow fadeIn" data-wow-delay='0.4s'>Today's buying</h1>
+      <h1 class="wow fadeIn" id="divTitle" data-wow-delay='0.4s'>Today's buying</h1>
       <a href="javascript:;" onclick="getData();" class="ui-btn-fab ui-btn-raised clr-warning ui-btn ui-btn-inline waves-effect waves-button waves-effect waves-button"><i class="zmdi zmdi-replay zmd-2x"></i></a>
     </div>
 
@@ -107,8 +114,12 @@
   $(document).bind("mobileinit", function(){
 $.mobile.ajaxLinksEnabled(false);
 });
+var isOldChecked = false;
+var selectedRow;
 
     $(document).ready(function(){
+      var oldData;
+                      
       Parse.initialize("c83fcAyGNd5F8vSdmI1aAgAhX2INlnTCL3ADZkZW", "ehe4YbTg5VH82sun0MkTCO6ZYmmghr4kEK5vrw72");
 
       $("a").attr("data-ajax", "false");
@@ -123,7 +134,7 @@ $.mobile.ajaxLinksEnabled(false);
 
       $('table').on('click', '.header', function() {
         var recId = $(this).attr("lang");
-
+        selectedRow = recId;
         $('.collapse').not(this).each(function(){
           if($(this).attr("id") != recId){
             $(this).css("display","none");
@@ -133,9 +144,16 @@ $.mobile.ajaxLinksEnabled(false);
         });
       });
       $(".ui-table-columntoggle-btn").remove();
-                      
       setInterval(getData, 30000);
     });
+    
+    function restoreToggle(){
+        $('.collapse').not(this).each(function(){
+              if($(this).attr("id") != selectedRow){
+                  $("#"+selectedRow).slideToggle(0);
+              }
+        });
+    }
 
     function getParameterByName(name) {
       name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -162,6 +180,7 @@ $.mobile.ajaxLinksEnabled(false);
         start.subtract(int, 'day');
         finish = new moment(start);
         finish.add(1, 'day');
+        $("#divTitle").html(start.format("DD/MM/YYYY"));
       }
 
       $("#currentDate").html(start.format("DD/MM/YYYY"));
@@ -178,6 +197,16 @@ $.mobile.ajaxLinksEnabled(false);
             var object = results[i];
             buildData(object);
           }
+                 
+             if(isOldChecked == false && days == ""){
+                 getYetToPickData();
+             }else{
+                 for (var i = 0; i < oldData.length; i++) {
+                     var object = oldData[i];
+                     buildData(object, true);
+                 }
+             }
+             restoreToggle();
         },
         error: function(error) {
           alert("Error loading data. Please try again later.");
@@ -185,6 +214,37 @@ $.mobile.ajaxLinksEnabled(false);
         }
       });
     }
+                            
+    function getYetToPickData(){
+        $.mobile.loading( 'show', { text: '', textVisible: false, theme: 'b', textonly: false, html: '' });
+        var query = new Parse.Query("Buying");
+        var start = "";
+        var finish = "";
+        var today = new moment();
+        var today2 = new moment();
+        start = today.subtract(2, 'day');
+        finish = today2.subtract(1, 'day');
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
+        query.doesNotExist("pickupby");
+        query.descending("createdAt");
+        query.find({
+                   success: function(results) {
+                   oldData = results;
+                   isOldChecked = true;
+                   $.mobile.loading('hide');
+                   for (var i = 0; i < results.length; i++) {
+                       var object = results[i];
+                        buildData(object, true);
+                       }
+                   },
+                   error: function(error) {
+                       alert("Error loading data. Please try again later.");
+                       $.mobile.loading('hide');
+                   }
+                });
+    }
+
 
     function confirmPickup(objectId){
         var buyingCls = Parse.Object.extend("Buying");
@@ -291,7 +351,7 @@ $.mobile.ajaxLinksEnabled(false);
       "</div>").trigger("create");
     }
 
-    function buildData(object){
+    function buildData(object,isOld){
       var activeClass = "active";
       var isPicked = false;
       var interferer = "";
@@ -331,6 +391,10 @@ $.mobile.ajaxLinksEnabled(false);
         "Edit Entry" +
         "</a>" +
         "</p>";
+
+        if(isOld == true){
+            activeClass = "oldInactive";
+        }
 
       $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
      "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")</td>" +
