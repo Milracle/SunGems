@@ -44,12 +44,28 @@
             border-style: solid;
           }
                 
+                .interfer {
+                    background-color: #f1ab00 !important;
+                    color: rgba(255, 255, 255, 0.85) !important;
+                    border-color: white;
+                    border-style: solid;
+                }
+                
                 .oldInactive {
                     background-color: #ff6666 !important;
                     color: rgba(255, 255, 255, 0.85) !important;
                     border-color: white;
                     border-style: solid;
                 }
+                
+                .oldHeader {
+                    background-color: #ffffff !important;
+                    color: rgba(0, 0, 0, 0.85) !important;
+                    border-color: white;
+                    border-style: solid;
+                    font-weight: bold;
+                }
+
 
           .active {
             background-color: rgb(244, 67, 54) !important;
@@ -116,6 +132,7 @@ $.mobile.ajaxLinksEnabled(false);
 });
 var isOldChecked = false;
 var selectedRow;
+var isHeaderPrinted = false;
 
     $(document).ready(function(){
       var oldData;
@@ -134,24 +151,31 @@ var selectedRow;
 
       $('table').on('click', '.header', function() {
         var recId = $(this).attr("lang");
-        selectedRow = recId;
+                    
         $('.collapse').not(this).each(function(){
           if($(this).attr("id") != recId){
             $(this).css("display","none");
           }else{
             $("#"+recId).slideToggle(0);
+              if( $(this).css('display') == 'table-row') {
+                  selectedRow = recId;
+              }else{
+                  selectedRow = "";
+              }
           }
         });
       });
       $(".ui-table-columntoggle-btn").remove();
-      setInterval(getData, 30000);
+      setInterval(getData, 10000);
     });
     
     function restoreToggle(){
-        $('.collapse').not(this).each(function(){
+        $('.collapse').each(function(){
               if($(this).attr("id") != selectedRow){
-                  $("#"+selectedRow).slideToggle(0);
-              }
+                  $(this).css("display","none");
+                }else{
+                  $("#"+selectedRow).css("display","block");
+                }
         });
     }
 
@@ -201,6 +225,7 @@ var selectedRow;
              if(isOldChecked == false && days == ""){
                  getYetToPickData();
              }else{
+                 isHeaderPrinted = false;
                  for (var i = 0; i < oldData.length; i++) {
                      var object = oldData[i];
                      buildData(object, true);
@@ -220,10 +245,18 @@ var selectedRow;
         var query = new Parse.Query("Buying");
         var start = "";
         var finish = "";
-        var today = new moment();
-        var today2 = new moment();
-        start = today.subtract(2, 'day');
-        finish = today2.subtract(1, 'day');
+        /*
+        var localDate = new Date();
+        var localMoment = moment();
+        //var utcMoment = moment.utc();
+        //var utcDate =
+        var today = moment.utc();
+        var today2 = moment.utc(); */
+        start = moment().subtract(2,'days').startOf('day');
+        finish = moment().startOf('day');
+                            
+        //start = today.subtract(3, 'day');
+        //finish = today2.subtract(1, 'day');
         query.greaterThanOrEqualTo("createdAt", start.toDate());
         query.lessThan("createdAt", finish.toDate());
         query.doesNotExist("pickupby");
@@ -261,6 +294,40 @@ var selectedRow;
             // error is a Parse.Error with an error code and message.
           }
         });
+    }
+                            
+    function doInterfer(objectId){
+    var buyingCls = Parse.Object.extend("Buying");
+    var query = new Parse.Query(buyingCls);
+    query.get(objectId, {
+              success: function(buyingObj) {
+              buyingObj.set("interfereCall",localStorage.getItem("Username"));
+              buyingObj.save();
+              getData();
+              // The object was retrieved successfully.
+              },
+              error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+              }
+              });
+    }
+    
+    function cancelInterfer(objectId){
+    var buyingCls = Parse.Object.extend("Buying");
+    var query = new Parse.Query(buyingCls);
+    query.get(objectId, {
+              success: function(buyingObj) {
+              buyingObj.set("interfereCall","");
+              buyingObj.save();
+              getData();
+              // The object was retrieved successfully.
+              },
+              error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+              }
+              });
     }
                             
     function cancelPickup(objectId){
@@ -329,10 +396,10 @@ var selectedRow;
       "</a>" +
       "</p>";
       if(object.get('pickupby') != "" && object.get('pickupby') !== undefined){
-        isPicked = true;
-        activeClass = "inactive";
-        strPickedup = "<p>Pickeup By: " + object.get('pickupby') + "</p>";
-      }
+            isPicked = true;
+            activeClass = "inactive";
+            strPickedup = "<p>Pickeup By: " + object.get('pickupby') + "</p>";
+        }
       $("#divDetails").append("<div class='ui-collapsible ui-collapsible-themed-content ui-collapsible-collapsed' data-role='collapsible' data-inset='false'>" +
             "<h4 class='" + activeClass + "'>" + object.get('seller') + " : " +  object.get('quantity') + " pic</h4>" +
                 "<p>Buyer: " + object.get('buyer') + "</p>" +
@@ -378,6 +445,22 @@ var selectedRow;
         "</p>";
       }
                             
+        if(object.get('interfereCall') != "" && object.get('interfereCall') !== undefined){
+                strPickedup += "<p>" +
+                "<a style='border: 1px solid;color:  #33659A;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='cancelInterfer(\"" + object.id + "\");' href='javascript:;'>" +
+                "<i class='zmdi zmdi-minus zmdi-hc-fw'></i> &nbsp;" +
+                "Cancel Interfer" +
+                "</a>" +
+                "</p>";
+        }else{
+                strPickedup += "<p>" +
+                "<a style='border: 1px solid;color:  #33659A;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='doInterfer(\"" + object.id + "\");' href='javascript:;'>" +
+                "<i class='zmdi zmdi-check zmdi-hc-fw'></i> &nbsp;" +
+                "Interfer" +
+                "</a>" +
+                "</p>";
+        }
+                            
         strPickedup += "<p>" +
         "<a style='border: 1px solid;color:  #FB0000;' class='ui-btn ui-btn-inline waves-effect clr-primary waves-button waves-effect waves-button' onclick='deleteEntry(\"" + object.id + "\");' href='javascript:;'>" +
         "<i class='zmdi zmdi-delete'></i> &nbsp;" +
@@ -394,10 +477,20 @@ var selectedRow;
 
         if(isOld == true){
             activeClass = "oldInactive";
+            if(!isHeaderPrinted){
+                isHeaderPrinted = true;
+                $("#table-column-toggle tbody").append("<tr class='oldHeader'><td colspan='6'>Yesterday</td></tr>");
+            }
         }
-
+        var interferName = "";
+                            
+        if((object.get('pickupby') == "" || object.get('pickupby') === undefined) && object.get('interfereCall') != "" && object.get('interfereCall') !== undefined){
+            activeClass  = "interfer";
+            interferName = " (IF - " + object.get('interfereCall') + ")";
+        }
+                            
       $("#table-column-toggle tbody").append("<tr class='" + activeClass + " header' lang='" + object.id + "'>" +
-     "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")</td>" +
+     "<td>" + object.get('seller') + " ("+ object.get('buyer') + ")" + interferName + "</td>" +
       "<td>"+ object.get('quantity') +"</td>" +
     "<td>"+ object.get('weight') +"</td>" +
 "<td>"+ (object.get('discount') === undefined ? "":object.get('discount')) +"</td>" +
