@@ -33,7 +33,7 @@
         }
         
         .checkbox {
-            margin-top: -8px !important;
+            margin-top: 8px !important;
         }
         
         .indicatorRed {
@@ -69,11 +69,21 @@
         .interfereCell{
             background-color: darkorange;
             color: white;
+            padding-top: 1.5em !important;
         }
         #btnRemoveInterfere {
             left: 50%;
             margin: 0 0 0 2px;
             background-color: darkorange;
+        }
+        
+        tr{
+            height: 65px;
+        }
+        
+        .Name{
+            font-size: 16px;
+            padding-top: 1.3em !important;
         }
         </style>
         
@@ -252,7 +262,7 @@
                 $("#table-column-toggle tbody").append("<tr class='inactive'>" +
                                                        checkboxStr +
                                                        "<td class='" + indicator + "'></td>" +
-                                                       "<td onClick='doTask(\"" + Company[i] + "\");'>" + Company[i] + "</td><td class='" + cls + "'>" + Interferer[i] + "</td></tr>").trigger("create");
+                                                       "<td onClick='doTask(\"" + Company[i] + "\");' class='Name'>" + Company[i] + "</td><td class='" + cls + "'>" + Interferer[i] + "</td></tr>").trigger("create");
             }
         }
         
@@ -270,7 +280,7 @@
                           else if (Type == "COMPLETED") localStorage.setItem("TitleString", "Pickup Done");
                           
                           getDatas();
-                          setInterval(getDatas, 10000);
+                          setInterval(getDatas, 30000);
                           }
                           
                           $("#btnInterfere").click(function () {
