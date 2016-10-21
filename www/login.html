@@ -77,9 +77,9 @@
               <option value="Virendra">Virendra</option>
               <option value="Vishal">Vishal</option>
               <option value="Yogesh">Yogesh</option>
-          </select>
+          </select><!--
             <input type="password"  style="display:none;" name="password" id="password" value="" data-clear-btn="true" placeholder="Password">
-
+-->
           <fieldset data-role="controlgroup">
             <a class="ui-btn ui-btn-raised clr-primary waves-effect waves-button waves-effect waves-button" id="btnEnter" href="javascript:;">Enter</a>
           </fieldset>
@@ -106,7 +106,10 @@
                 if(val == "Select User"){
                    alert("Please select user");
                 }else{
-                       var buyer = $('#dlBuyer').find(":selected").val();
+                   var buyer = $('#dlBuyer').find(":selected").val();
+                   window.localStorage.setItem("Username", buyer);
+                   location.href = 'landing.html';
+                   /*
                        var password = $("#password").val();
                     if(buyer == "Bhautik" || buyer == "Damjibhai" || buyer == "Fenil" || buyer == "Hardik" || buyer == "Kaushik" || buyer == "Manish"){
                        var query = new Parse.Query("Person")
@@ -130,17 +133,17 @@
                        }else{
                            window.localStorage.setItem("Username", buyer);
                            location.href = 'landing.html';
-                       }
+                       }*/
                     }
               });
                               
               $("#dlBuyer").on("change",function(){
-                    var buyer = $('#dlBuyer').find(":selected").val();
+                   /* var buyer = $('#dlBuyer').find(":selected").val();
                                if(buyer == "Bhautik" || buyer == "Damjibhai" || buyer == "Fenil" || buyer == "Hardik" || buyer == "Kaushik" || buyer == "Manish" ){
                                 $("#password").css("display","block");
                                }else{
                                 $("#password").css("display","none");
-                               }
+                               }*/
               });
             });
         </script>
